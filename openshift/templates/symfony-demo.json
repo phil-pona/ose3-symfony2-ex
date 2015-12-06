@@ -1,0 +1,291 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "symfony-demo",
+    "annotations": {
+      "description": "The symfony demo application",
+      "tags": "instant-app,php,symfony",
+      "iconClass": "icon-php"
+    }
+  },
+  "labels": {
+    "template": "symfony-demo"
+  },
+  "objects": [
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "symfony-demo",
+        "annotations": {
+          "description": "Exposes and load balances the symfony application pods"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "web",
+            "port": 8080,
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "name": "symfony-demo" 
+        }
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "symfony-demo"
+      },
+      "spec": {
+        "host": "${APPLICATION_DOMAIN}",
+        "to": {
+          "kind": "Service",
+          "name": "symfony-demo"
+        }
+      }
+    },
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "symfony-demo",
+        "annotations": {
+          "description": "Keeps track of changes in the application image"
+        }
+      }
+    },
+    {
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "symfony-demo",
+        "annotations": {
+          "description": "Defines how to build the application"
+        }
+      },
+      "spec": {
+        "source": {
+          "type": "Git",
+          "git": {
+            "uri": "${SOURCE_REPOSITORY_URL}",
+            "ref": "${SOURCE_REPOSITORY_REF}"
+          },
+          "contextDir": "${CONTEXT_DIR}"
+        },
+        "strategy": {
+          "type": "Source",
+          "sourceStrategy": {
+            "from": {
+              "kind": "ImageStreamTag",
+              "namespace": "openshift",
+              "name": "php:5.6"
+            }
+          }
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStreamTag",
+            "name": "symfony-demo:latest"
+          }
+        },
+        "triggers": [
+          {
+            "type": "ImageChange"
+          },
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "GitHub",
+            "github": {
+              "secret": "${GITHUB_WEBHOOK_SECRET}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "symfony-demo",
+        "annotations": {
+          "description": "Defines how to deploy the application server"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling"
+        },
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "symfony-demo"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "symfony-demo:latest"
+              }
+            }
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 1,
+        "selector": {
+          "name": "symfony-demo"
+        },
+        "template": {
+          "metadata": {
+            "name": "symfony-demo",
+            "labels": {
+              "name": "symfony-demo"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "symfony-demo",
+                "image": "symfony-demo",
+                "ports": [
+                  {
+                    "containerPort": 8080
+                  }
+                ],
+                "env": [
+                  {
+                    "name": "DATABASE_SERVICE_NAME",
+                    "value": "${DATABASE_SERVICE_NAME}"
+                  },
+                  {
+                    "name": "DATABASE_DRIVER",
+                    "value": "${DATABASE_DRIVER}"
+                  },
+                  {
+                    "name": "DATABASE_NAME",
+                    "value": "${DATABASE_NAME}"
+                  },
+                  {
+                    "name": "DATABASE_USER",
+                    "value": "${DATABASE_USER}"
+                  },
+                  {
+                    "name": "DATABASE_PASSWORD",
+                    "value": "${DATABASE_PASSWORD}"
+                  },
+                  {
+                    "name": "MAILER_TRANSPORT",
+                    "value": "${MAILER_TRANSPORT}"
+                  },
+                  {
+                    "name": "MAILER_HOST",
+                    "value": "${MAILER_HOST}"
+                  },
+                  {
+                    "name": "MAILER_USER",
+                    "value": "${MAILER_USER}"
+                  },
+                  {
+                    "name": "MAILER_PASSWORD",
+                    "value": "${MAILER_PASSWORD}"
+                  },
+                  {
+                    "name": "SYMFONY_SECRET",
+                    "value": "${SYMFONY_SECRET}"
+                  },
+                  {
+                    "name": "OPCACHE_REVALIDATE_FREQ",
+                    "value": "${OPCACHE_REVALIDATE_FREQ}"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "name": "SOURCE_REPOSITORY_URL",
+      "description": "The URL of the repository with your application source code",
+      "value": "https://github.com/symfony/symfony-demo.git"
+    },
+    {
+      "name": "SOURCE_REPOSITORY_REF",
+      "description": "Set this to a branch name, tag or other ref of your repository if you are not using the default branch"
+    },
+    {
+      "name": "CONTEXT_DIR",
+      "description": "Set this to the relative path to your project if it is not in the root of your repository"
+    },
+    {
+      "name": "APPLICATION_DOMAIN",
+      "description": "The exposed hostname that will route to the Symfony service, if left blank a value will be defaulted.",
+      "value": ""
+    },
+    {
+      "name": "GITHUB_WEBHOOK_SECRET",
+      "description": "A secret string used to configure the GitHub webhook",
+      "generate": "expression",
+      "from": "[a-zA-Z0-9]{40}"
+    },
+    {
+      "name": "DATABASE_SERVICE_NAME",
+      "description": "Database service name, is used to concat the host and port values getenv(\"DATABASE_SERVICE_NAME\")._SERVICE_HOST | SERVICE_PORT"
+    },
+    {
+      "name": "DATABASE_DRIVER",
+      "description": "Database driver: pdo_postgresql, pdo_mysql or pdo_sqlite (default)"
+    },
+    {
+      "name": "DATABASE_NAME",
+      "description": "Database name"
+    },
+    {
+      "name": "DATABASE_USER",
+      "description": "Database user name"
+    },
+    {
+      "name": "DATABASE_PASSWORD",
+      "description": "Database user password"
+    },
+    {
+      "name": "MAILER_TRANSPORT",
+      "description": "Mail Service Protocol"
+    },
+    {
+      "name": "MAILER_HOST",
+      "description": "Mail Service Host"
+    },
+    {
+      "name": "MAILER_USER",
+      "description": "Mail Service User"
+    },
+    {
+      "name": "MAILER_PASSWORD",
+      "description": "Mail Service Password"
+    },
+    {
+      "name": "SYMFONY_SECRET",
+      "description": "Set this to a long random string",
+      "generate": "expression",
+      "from": "[\\w]{32}"
+    },
+    {
+      "name": "OPCACHE_REVALIDATE_FREQ",
+      "description": "The How often to check script timestamps for updates, in seconds. 0 will result in OPcache checking for updates on every request.",
+      "value": "2"
+    }
+  ]
+}
+

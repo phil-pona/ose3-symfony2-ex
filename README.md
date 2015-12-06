@@ -1,6 +1,6 @@
 # Symfony 2 Demo Application on OpenShift
 
-This is an example how the Symfony 2 Demo Application can be deployed on the OpenShift V3 PaaS
+This is an example how the [Symfony 2 Demo Application](https://github.com/symfony/symfony-demo) can be deployed on the OpenShift V3 PaaS
 
 # License
 
