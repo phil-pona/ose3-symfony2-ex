@@ -2,7 +2,12 @@
 
 This is an example how the [Symfony 2 Demo Application](https://github.com/symfony/symfony-demo) can be deployed on the OpenShift V3 PaaS
 
+## S2I Image
+
+At the moment a [forked S2i Image](https://github.com/phil-pona/sti-php) is used to build this application, due to the following [issue](https://github.com/openshift/sti-php/issues/73) on the official [sti-php image](https://github.com/openshift/sti-php)
+
 ## Usage
+
 
 
 1. Create a new OpenShift 3 Project
@@ -11,12 +16,17 @@ This is an example how the [Symfony 2 Demo Application](https://github.com/symfo
 $ oc new-project symfony2-demo
 ```
 
+1.1 Add Builder Image (only neede as long as the official Image does not support Symfony)
+```
+$ oc new-app  https://github.com/phil-pona/sti-php --context-dir=5.6 --strategy=docker
+```
+
 2. Run the following command to create the symfony Demo Application
 
 		$ oc create -f https://raw.githubusercontent.com/phil-pona/ose3-symfony2-ex/master/openshift/templates/symfony-demo.json
 		$ oc process symfony-demo | oc create -f -
 
-4. Depending on the state of your system, and whether additional items need to be downloaded, it may take around a minute for your build to be started automatically.  If you do not want to wait, run
+4. start manually the build of the demo application
 
 
 		$ oc start-build symfony-demo
