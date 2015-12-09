@@ -83,7 +83,7 @@
             "from": {
               "kind": "ImageStreamTag",
               "namespace": "openshift",
-              "name": "phil-pona/sti-php:latest"
+              "name": "sti-php:latest"
             }
           }
         },
