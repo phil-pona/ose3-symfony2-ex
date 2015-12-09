@@ -82,7 +82,7 @@
           "sourceStrategy": {
             "from": {
               "kind": "ImageStreamTag",
-              "namespace": "openshift",
+              "namespace": "phil-pona",
               "name": "sti-php:latest"
             }
           }

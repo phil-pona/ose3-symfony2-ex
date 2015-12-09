@@ -14,10 +14,13 @@ $ oc new-project symfony2-demo
 2. Run the following command to create the symfony Demo Application
 
 		$ oc create -f https://raw.githubusercontent.com/phil-pona/ose3-symfony2-ex/master/openshift/templates/symfony-demo.json
+		$ oc process symfony-demo | oc create -f -
 
 4. Depending on the state of your system, and whether additional items need to be downloaded, it may take around a minute for your build to be started automatically.  If you do not want to wait, run
 
+
 		$ oc start-build symfony-demo
+
 
 5. Once the build is running, watch your build progress  
 
