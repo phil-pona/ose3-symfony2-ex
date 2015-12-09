@@ -82,8 +82,8 @@
           "sourceStrategy": {
             "from": {
               "kind": "ImageStreamTag",
-              "namespace": "phil-pona",
-              "name": "sti-php:latest"
+              "namespace": "symfony2-demo",
+              "name": "sti-symfony:latest"
             }
           }
         },

@@ -4,7 +4,7 @@ This is an example how the [Symfony 2 Demo Application](https://github.com/symfo
 
 ## S2I Image
 
-At the moment a [forked S2i Image](https://github.com/phil-pona/sti-php) is used to build this application, due to the following [issue](https://github.com/openshift/sti-php/issues/73) on the official [sti-php image](https://github.com/openshift/sti-php)
+At the moment the [symfony S2i Image](https://github.com/phil-pona/sti-symfony) is used to build this application, due to the following [issue](https://github.com/openshift/sti-php/issues/73) on the official [sti-php image](https://github.com/openshift/sti-php)
 
 ## Usage
 
@@ -18,7 +18,7 @@ $ oc new-project symfony2-demo
 
 1.1 Add Builder Image (only neede as long as the official Image does not support Symfony)
 ```
-$ oc new-app  https://github.com/phil-pona/sti-php --context-dir=5.6 --strategy=docker
+$ oc new-app  https://github.com/phil-pona/sti-symfony --context-dir=5.6 --strategy=docker
 ```
 
 2. Run the following command to create the symfony Demo Application
