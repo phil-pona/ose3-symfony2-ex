@@ -40,6 +40,16 @@ $ oc new-app  https://github.com/phil-pona/sti-php --context-dir=5.6 --strategy=
 
 		$ oc get pods -w
 
+7. The Symfony Demo Application 
+
+access the application on <route>/web 
+
+Work in Progress:
+add missing .htaccess file
+
+
+
+
 # License
 
 Released under the Apache License 2.0. See the [LICENSE](https://github.com/phil-pona/ose3-symfony2-ex/blob/master/LICENSE) file.
