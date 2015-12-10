@@ -16,7 +16,7 @@ At the moment the [symfony S2i Image](https://github.com/phil-pona/sti-symfony) 
 $ oc new-project symfony2-demo
 ```
 
-1.1 Add Builder Image (only neede as long as the official Image does not support Symfony)
+1.1 Add Builder Image (only needed as long as the official Image does not support [Symfony](https://github.com/openshift/sti-php/issues/73))
 ```
 $ oc new-app  https://github.com/phil-pona/sti-symfony --context-dir=5.6 --strategy=docker
 ```
